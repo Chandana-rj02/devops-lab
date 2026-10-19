@@ -1,0 +1,26 @@
+
+#include <tunables/global>
+
+profile my-apparmor-profile flags=(attach_disconnected) {
+    # Deny reading sensitive system files
+    deny /etc/** r,
+
+    # Deny writing to system log and variable directories
+    deny /var/** w,
+
+    # Allow network communication
+    network inet stream,
+
+    # Allow access to the application directory
+    /app/** rwk,
+
+    # Allow Python and required system libraries
+    /usr/** r,
+    /lib/** r,
+    /lib64/** r,
+    /bin/** r,
+
+    # Restrict system administration capabilities
+    capability net_bind_service,
+    deny capability sys_admin,
+}

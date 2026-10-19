@@ -1,0 +1,35 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Delivery monitoring project checked out'
+            }
+        }
+
+        stage('Validate Python') {
+            steps {
+                sh 'python --version'
+                sh 'python -m py_compile delivery_metrics.py'
+            }
+        }
+
+        stage('Validate Project Files') {
+            steps {
+                sh 'test -f prometheus.yml'
+                sh 'test -f alert_rules.yml'
+                sh 'test -f Dockerfile'
+                sh 'test -f docker-compose.yml'
+                echo 'Project files verified successfully'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t delivery-monitoring .'
+            }
+        }
+    }
+}
